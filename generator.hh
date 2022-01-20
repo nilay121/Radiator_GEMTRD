@@ -18,6 +18,7 @@
 #include "G4SystemOfUnits.hh"
 #include "Randomize.hh"
 #include "G4Gamma.hh"
+#include "G4PionMinus.hh"
 #include "G4Electron.hh"
 class G4Box;
 class MyPrimaryGenerator : public G4VUserPrimaryGeneratorAction

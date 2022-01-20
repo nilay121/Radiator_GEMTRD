@@ -14,6 +14,10 @@ MyRunAction::MyRunAction()
     man->CreateNtupleDColumn("fMomZ");
     man->CreateNtupleDColumn("detector_position");
     man->CreateNtupleDColumn("trackid");
+    man->CreateNtupleDColumn("X_vetexPos");
+    man->CreateNtupleDColumn("Y_vetexPos");
+    man->CreateNtupleDColumn("Z_vetexPos");
+    man->CreateNtupleDColumn("MomZ_vetexPos");
     man->FinishNtuple(0);
 
 }

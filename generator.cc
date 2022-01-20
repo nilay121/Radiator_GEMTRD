@@ -7,9 +7,10 @@ MyPrimaryGenerator::MyPrimaryGenerator()
     
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
-  G4ParticleDefinition *particle = particleTable->FindParticle(particleName="e-");
-  //G4ParticleDefinition *particle = G4Electron::Definition();
+  //G4ParticleDefinition *particle = particleTable->FindParticle(particleName="e-");
+  G4ParticleDefinition *particle = G4Electron::Definition();
   //G4ParticleDefinition *particle = G4Gamma::Definition();
+  //G4ParticleDefinition *particle = G4PionMinus::Definition();
 
   fParticleGun->SetParticleDefinition(particle);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));

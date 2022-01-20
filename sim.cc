@@ -14,6 +14,7 @@
 int main(int argc, char** argv)
 {
     G4UIExecutive* ui = 0;
+    MyDetectorConstruction* pDet;
     
     #ifdef G4MULTITHREADED
       G4MTRunManager* runManager = new G4MTRunManager;
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
     #endif
     
     runManager->SetUserInitialization(new MyDetectorConstruction());
-    runManager->SetUserInitialization(new MyPhysicsList());
+    runManager->SetUserInitialization(new MyPhysicsList(pDet));
     runManager->SetUserInitialization(new MyActionInitialization());
 
     if (argc == 1)

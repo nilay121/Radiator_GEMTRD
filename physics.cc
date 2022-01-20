@@ -64,14 +64,357 @@
 
 
 
-MyPhysicsList::MyPhysicsList()
+MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),MaxChargedStep(DBL_MAX),
+     fRadiatorCuts(0),fDetectorCuts(0)
 {
-    RegisterPhysics (new G4EmStandardPhysics_option2());	// Foe electromagnetic interaction> Modular 
+   pDet = p;
+
+  // world cuts
+
+  defaultCutValue = 1.*mm;
+  //defaultCutValue = 0.001*mm;  // 1 um
+  cutForGamma     = defaultCutValue;
+  cutForElectron  = defaultCutValue;
+  cutForPositron  = defaultCutValue;
+
+  // Region cuts
+
+  fGammaCut    = defaultCutValue;
+  fElectronCut = defaultCutValue;
+  fPositronCut = defaultCutValue;
+
+  SetVerboseLevel(1);
 }
 
 MyPhysicsList::~MyPhysicsList()
 {}
+void MyPhysicsList::ConstructParticle()
+{
+  // In this method, static member functions should be called
+  // for all particles which you want to use.
+  // This ensures that objects of these particle types will be
+  // created in the program. 
 
+  /*
+  G4BosonConstructor  pBosonConstructor;
+  pBosonConstructor.ConstructParticle();
+
+  G4LeptonConstructor pLeptonConstructor;
+  pLeptonConstructor.ConstructParticle();
+
+  G4MesonConstructor pMesonConstructor;
+  pMesonConstructor.ConstructParticle();
+
+  G4BaryonConstructor pBaryonConstructor;
+  pBaryonConstructor.ConstructParticle();
+
+  //  G4IonConstructor pIonConstructor;
+  //  pIonConstructor.ConstructParticle();
+
+  G4ShortLivedConstructor pShortLivedConstructor;
+  pShortLivedConstructor.ConstructParticle();
+  */
+  //---- old ---
+
+  ConstructBosons();
+  ConstructLeptons();
+  ConstructMesons();
+  ConstructBarions();
+}
+
+void MyPhysicsList::ConstructBosons()
+{
+  // gamma
+  G4Gamma::GammaDefinition();
+}
+
+void MyPhysicsList::ConstructLeptons()
+{
+  // leptons
+
+  G4Electron::ElectronDefinition();
+  G4Positron::PositronDefinition();
+  G4MuonPlus::MuonPlusDefinition();
+  G4MuonMinus::MuonMinusDefinition();
+
+  G4NeutrinoE::NeutrinoEDefinition();
+  G4AntiNeutrinoE::AntiNeutrinoEDefinition();
+  G4NeutrinoMu::NeutrinoMuDefinition();
+  G4AntiNeutrinoMu::AntiNeutrinoMuDefinition();
+}
+
+void MyPhysicsList::ConstructMesons()
+{
+ //  mesons
+
+  G4PionPlus::PionPlusDefinition();
+  G4PionMinus::PionMinusDefinition();
+  G4PionZero::PionZeroDefinition();
+  G4KaonPlus::KaonPlusDefinition();
+  G4KaonMinus::KaonMinusDefinition();
+}
+
+
+void MyPhysicsList::ConstructBarions()
+{
+//  barions
+
+  G4Proton::ProtonDefinition();
+  G4AntiProton::AntiProtonDefinition();
+}
+
+void MyPhysicsList::ConstructProcess()
+{
+  AddTransportation();
+  ConstructEM();
+  ConstructGeneral();
+}
+
+void MyPhysicsList::ConstructEM()
+{
+  
+  // G4cout<<"fMinElectronEnergy = "<<fMinElectronEnergy/keV<<" keV"<<G4endl;
+  // G4cout<<"fMinGammaEnergy = "<<fMinGammaEnergy/keV<<" keV"<<G4endl;
+  //G4cout<<"XTR model = "<<fXTRModel<<G4endl;
+
+  const G4RegionStore* theRegionStore = G4RegionStore::GetInstance();
+  G4Region* gas = theRegionStore->GetRegion("XTRdEdxDetector");
+
+  G4VXTRenergyLoss* processXTR = 0;
+  /*
+  
+   ############ what to do with this processXTR
+  if(fXTRModel == "gammaR" )          
+  {      
+    // G4GammaXTRadiator* 
+    processXTR = new G4GammaXTRadiator(pDet->GetLogicalRadiator(),
+				       100.,   //--  AlphaPlate 100
+				       100.,   //--  AlphaGas   100
+                                       pDet->GetFoilMaterial(),
+                                       pDet->GetGasMaterial(),
+                                       pDet->GetFoilThick(),
+                                       pDet->GetGasThick(),
+                                       pDet->GetFoilNumber(),
+                                       "GammaXTRadiator");
+  }
+  else if(fXTRModel == "gammaM" ) 
+  {
+    // G4XTRGammaRadModel* 
+    processXTR = new G4XTRGammaRadModel(pDet->GetLogicalRadiator(),
+                                       100.,
+                                       100.,
+                                       pDet->GetFoilMaterial(),
+                                       pDet->GetGasMaterial(),
+                                       pDet->GetFoilThick(),
+                                       pDet->GetGasThick(),
+                                       pDet->GetFoilNumber(),
+                                       "GammaXTRadiator");
+  }
+  else if(fXTRModel == "strawR" ) 
+  {
+
+    // G4StrawTubeXTRadiator* 
+    processXTR = new G4StrawTubeXTRadiator(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                0.53,           // pDet->GetFoilThick(),
+                                3.14159,           // pDet->GetGasThick(),
+                                         pDet->GetAbsorberMaterial(),
+                                         true,
+                                         "strawXTRadiator");
+  }
+  else if(fXTRModel == "regR" ) 
+  {      
+    // G4RegularXTRadiator* 
+    processXTR = new G4RegularXTRadiator(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                         pDet->GetFoilThick(),
+                                         pDet->GetGasThick(),
+                                         pDet->GetFoilNumber(),
+                                         "RegularXTRadiator");            
+  }
+  else if(fXTRModel == "transpR" ) 
+  {
+    // G4TransparentRegXTRadiator* 
+    processXTR = new G4TransparentRegXTRadiator(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                         pDet->GetFoilThick(),
+                                         pDet->GetGasThick(),
+                                         pDet->GetFoilNumber(),
+                                         "RegularXTRadiator");
+  }
+  else if(fXTRModel == "regM" ) 
+  {
+    // G4XTRRegularRadModel* 
+    processXTR = new G4XTRRegularRadModel(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                         pDet->GetFoilThick(),
+                                         pDet->GetGasThick(),
+                                         pDet->GetFoilNumber(),
+                                         "RegularXTRadiator");
+       
+  }
+  else if(fXTRModel == "transpM" ) 
+  { 
+    // G4XTRTransparentRegRadModel* 
+    // processXTR = new G4XTRTransparentRegRadModel(pDet->GetLogicalRadiator(),
+    processXTR = new VtxXTRTransparentRegRadModel(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                         pDet->GetFoilThick(),
+                                         pDet->GetGasThick(),
+                                         pDet->GetFoilNumber(),
+                                         "RegularXTRadiator");
+  }     
+  else
+  {
+    G4Exception("Invalid XTR model name", "InvalidSetup",
+                 FatalException, "XTR model name is out of the name list");
+  }   
+  //  processXTR->SetCompton(true);
+  
+  //processXTR->SetVerboseLevel(1);
+  //processXTR->SetAngleRadDistr(true);*/
+
+  auto theParticleIterator=GetParticleIterator();
+  theParticleIterator->reset();
+
+  while( (*theParticleIterator)() )
+  {
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+    G4String particleName = particle->GetParticleName();
+
+    if (particleName == "gamma")
+    {
+      // Construct processes for gamma
+
+      pmanager->AddDiscreteProcess(new G4PhotoElectricEffect);
+      pmanager->AddDiscreteProcess(new G4ComptonScattering);
+      pmanager->AddDiscreteProcess(new G4GammaConversion);
+
+    }
+  
+    else if (particleName == "e-")
+    {
+      // Construct processes for electron
+      theeminusStepCut = new VtxStepCut();
+      theeminusStepCut->SetMaxStep(MaxChargedStep) ;
+      //theeminusStepCut->SetMaxStep(100*um) ;
+      
+      G4eIonisation* eioni = new G4eIonisation();
+      G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
+      eioni->AddEmModel(0,pai,pai,gas);
+
+      pmanager->AddProcess(new G4eMultipleScattering,-1,1,1);
+      
+      ////pmanager->AddProcess(new G4eMultipleScattering,-1,-1,-1);
+      
+      pmanager->AddProcess(eioni,-1,2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
+      //pmanager->AddDiscreteProcess(processXTR);
+      pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
+      pmanager->AddDiscreteProcess(theeminusStepCut);
+
+    }
+   
+    /*
+    else if (particleName == "e+")
+    {
+      // Construct processes for positron
+
+      theeplusStepCut = new VtxStepCut();
+      theeplusStepCut->SetMaxStep(MaxChargedStep) ;
+      G4eIonisation* eioni = new G4eIonisation();
+      G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
+      eioni->AddEmModel(0,pai,pai,gas);
+
+      pmanager->AddProcess(new G4eMultipleScattering,-1,1,1);
+      //pmanager->AddProcess(new G4eMultipleScattering,-1,-1,-1);
+      pmanager->AddProcess(eioni,-1,2,2);
+      pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
+      pmanager->AddProcess(new G4eplusAnnihilation,0,-1,4);
+      //pmanager->AddDiscreteProcess(processXTR);
+      pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
+      pmanager->AddDiscreteProcess(theeplusStepCut);
+
+    }
+    else if( particleName == "mu+" ||
+             particleName == "mu-"    )
+    {
+     // Construct processes for muon+
+
+      VtxStepCut* muonStepCut = new VtxStepCut();
+      muonStepCut->SetMaxStep(MaxChargedStep) ;
+
+      G4MuIonisation* muioni = new G4MuIonisation() ;
+
+      G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
+      muioni->AddEmModel(0,pai,pai,gas);
+
+      pmanager->AddProcess(new G4MuMultipleScattering(),-1,1,1);
+      pmanager->AddProcess(muioni,-1,2,2);
+      pmanager->AddProcess(new G4MuBremsstrahlung(),-1,3,3);
+      pmanager->AddProcess(new G4MuPairProduction(),-1,4,4);
+      pmanager->AddProcess( muonStepCut,-1,-1,5);
+      //pmanager->AddDiscreteProcess(processXTR);
+
+    }
+    */
+    else if (
+                particleName == "proton"
+               || particleName == "antiproton"
+               || particleName == "pi+"
+               || particleName == "pi-"
+               || particleName == "kaon+"
+               || particleName == "kaon-"
+              )
+    {
+      VtxStepCut* thehadronStepCut = new VtxStepCut();
+      thehadronStepCut->SetMaxStep(MaxChargedStep) ;
+
+      G4hIonisation* thehIonisation = new G4hIonisation();
+      G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
+      thehIonisation->AddEmModel(0,pai,pai,gas);
+
+      pmanager->AddProcess(new G4hMultipleScattering,-1,1,1);
+      pmanager->AddProcess(thehIonisation,-1,2,2);
+      pmanager->AddProcess(thehadronStepCut,-1,-1,3);
+      //pmanager->AddDiscreteProcess(processXTR);
+
+    }
+  }
+  G4EmProcessOptions opt;
+  opt.SetApplyCuts(true);
+}
+
+void MyPhysicsList::ConstructGeneral()
+{
+  // Add Decay Process
+
+  G4Decay* theDecayProcess = new G4Decay();
+  auto theParticleIterator=GetParticleIterator();
+  theParticleIterator->reset();
+
+  while( (*theParticleIterator)() )
+  {
+    G4ParticleDefinition* particle = theParticleIterator->value();
+    G4ProcessManager* pmanager = particle->GetProcessManager();
+
+    if (theDecayProcess->IsApplicable(*particle)) 
+    { 
+      pmanager ->AddProcess(theDecayProcess);
+
+      // set ordering for PostStepDoIt and AtRestDoIt
+
+      pmanager ->SetProcessOrdering(theDecayProcess, idxPostStep);
+      pmanager ->SetProcessOrdering(theDecayProcess, idxAtRest);
+    }
+  }
+}
 void MyPhysicsList::SetCuts()
 {
   // set cut values for gamma at first and for e- second and next for e+,
@@ -110,6 +453,15 @@ void MyPhysicsList::SetElectronCut(G4double val)
 {
   cutForElectron = val;
 }
+
+void MyPhysicsList::SetMaxStep(G4double step)
+{
+  MaxChargedStep = step ;
+  G4cout << " MaxChargedStep=" << MaxChargedStep << G4endl;
+  G4cout << G4endl;
+}
+
+
 void MyPhysicsList::SetRadiatorCuts()
 {
   if( !fRadiatorCuts ) fRadiatorCuts = new G4ProductionCuts();

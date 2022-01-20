@@ -1,6 +1,6 @@
 #include "construction.hh"
 
-MyDetectorConstruction::MyDetectorConstruction()
+MyDetectorConstruction::MyDetectorConstruction():fRegGasDet(0), fRadRegion(0)
 {
 }
 
