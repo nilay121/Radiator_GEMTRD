@@ -524,8 +524,7 @@ G4NistManager* man = G4NistManager::Instance();
                     checkOverlaps);          //overlaps checking
  
  
-  if( fRadRegion != 0 ) delete fRadRegion; 
-  if( fRadRegion == 0 )        fRadRegion = new G4Region("XTRradiator");
+  fRadRegion = new G4Region("XTRradiator");
   fRadRegion->AddRootLogicalVolume(logicEnv);  
 
  //Absorber(GEM)
@@ -548,9 +547,8 @@ G4NistManager* man = G4NistManager::Instance();
                     checkOverlaps);          //overlaps checking
                     
                     
-  if( fRegGasDet != 0 ) delete fRegGasDet;
-  if( fRegGasDet == 0 )        fRegGasDet = new G4Region("XTRdEdxDetector");  
- 
+  fRegGasDet = new G4Region("XTRdEdxDetector");  
+  fRegGasDet->AddRootLogicalVolume(logicGem);
   fScoringVolume=logicGem;
   return physWorld;  
   

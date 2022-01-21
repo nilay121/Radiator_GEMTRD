@@ -466,9 +466,9 @@ void MyPhysicsList::SetRadiatorCuts()
 {
   if( !fRadiatorCuts ) fRadiatorCuts = new G4ProductionCuts();
 
-  fRadiatorCuts->SetProductionCut(fGammaCut, idxG4GammaCut);
-  fRadiatorCuts->SetProductionCut(fElectronCut, idxG4ElectronCut);
-  fRadiatorCuts->SetProductionCut(fPositronCut, idxG4PositronCut);
+  fRadiatorCuts->SetProductionCut(fGammaCut, G4ProductionCuts::GetIndex("gamma"));
+  fRadiatorCuts->SetProductionCut(fElectronCut, G4ProductionCuts::GetIndex("e-"));
+  fRadiatorCuts->SetProductionCut(fPositronCut, G4ProductionCuts::GetIndex("e+"));
 
   G4cout<<"Radiator gamma cut    = "<<fGammaCut/mm<<" mm"<<G4endl;
   G4cout<<"Radiator electron cut = "<<fElectronCut/mm<<" mm"<<G4endl;
@@ -479,9 +479,9 @@ void MyPhysicsList::SetDetectorCuts()
 {
   if( !fDetectorCuts ) fDetectorCuts = new G4ProductionCuts();
 
-  fDetectorCuts->SetProductionCut(fGammaCut, idxG4GammaCut);
-  fDetectorCuts->SetProductionCut(fElectronCut, idxG4ElectronCut);
-  fDetectorCuts->SetProductionCut(fPositronCut, idxG4PositronCut);
+  fDetectorCuts->SetProductionCut(fGammaCut, G4ProductionCuts::GetIndex("gamma"));
+  fDetectorCuts->SetProductionCut(fElectronCut, G4ProductionCuts::GetIndex("e-"));
+  fDetectorCuts->SetProductionCut(fPositronCut, G4ProductionCuts::GetIndex("e+"));
 
   G4cout<<"Detector gamma cut    = "<<fGammaCut/mm<<" mm"<<G4endl;
   G4cout<<"Detector electron cut = "<<fElectronCut/mm<<" mm"<<G4endl;
