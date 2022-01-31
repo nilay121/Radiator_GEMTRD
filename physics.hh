@@ -61,6 +61,7 @@ public:
     G4ProductionCuts* fDetectorCuts;
     G4double fElectronCut, fGammaCut, fPositronCut;
     G4String fXTRModel;
+    G4double step_cut=1.*mm;
 };
 
 #endif

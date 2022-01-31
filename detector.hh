@@ -12,8 +12,7 @@ class MySensitiveDetector : public G4VSensitiveDetector
 public:
     MySensitiveDetector(G4String);
     ~MySensitiveDetector();
-    G4double edep;
-    G4double fdep=0;
+    G4double edep_val;
     
 private:
     virtual G4bool ProcessHits(G4Step *, G4TouchableHistory *);

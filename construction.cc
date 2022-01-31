@@ -526,7 +526,7 @@ G4NistManager* man = G4NistManager::Instance();
  
   fRadRegion = new G4Region("XTRradiator");
   fRadRegion->AddRootLogicalVolume(logicEnv);  
-
+  
  //Absorber(GEM)
   G4Box* solidGem =    
     new G4Box("gem",                    //its name
@@ -537,7 +537,7 @@ G4NistManager* man = G4NistManager::Instance();
                         Xe20CO2,             //its material
                         "gem");         //its name
                
-  new G4PVPlacement(0,                       //no rotation
+  fAbsorberPV=new G4PVPlacement(0,                       //no rotation
                     G4ThreeVector(0.,0.,16.5*cm),         //at (0,0,0)
                     logicGem,                //its logical volume
                     "gem",              //its name
@@ -549,6 +549,13 @@ G4NistManager* man = G4NistManager::Instance();
                     
   fRegGasDet = new G4Region("XTRdEdxDetector");  
   fRegGasDet->AddRootLogicalVolume(logicGem);
+  //G4double maxStep = 0.1*mm;
+  //G4double maxTime = 100.*s;
+
+  //G4UserLimits* stepLimit = new G4UserLimits(maxStep,DBL_MAX,maxTime);
+
+  //logicGem->SetUserLimits(stepLimit);
+  
   fScoringVolume=logicGem;
   return physWorld;  
   
@@ -556,8 +563,8 @@ G4NistManager* man = G4NistManager::Instance();
 
 void MyDetectorConstruction::ConstructSDandField()
 {
-    MySensitiveDetector *sensDet = new MySensitiveDetector("SensitiveDetector");
     G4SDManager *sdman=G4SDManager::GetSDMpointer();
+    MySensitiveDetector* sensDet = new MySensitiveDetector("SensitiveDetector");
     sdman->AddNewDetector(sensDet);
     logicGem->SetSensitiveDetector(sensDet);
 }

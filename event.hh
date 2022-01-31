@@ -16,11 +16,19 @@ public:
     
     virtual void BeginOfEventAction(const G4Event*);
     virtual void EndOfEventAction(const G4Event*);
-    
-    void AddEdep(G4double edep) { fEdep += edep; } 
+    void AddEdep(G4double edep,G4double posz);
     
 private:
     G4double fEdep;
+    G4double fPosZ;
 };
+
+inline void MyEventAction::AddEdep(G4double edep,G4double posz) 
+{ 
+  fEdep += edep;
+  fPosZ += posz;
+} 
+
+
 
 #endif

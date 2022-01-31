@@ -19,6 +19,12 @@ MyRunAction::MyRunAction()
     man->CreateNtupleDColumn("Z_vetexPos");
     man->CreateNtupleDColumn("MomZ_vetexPos");
     man->FinishNtuple(0);
+  
+  
+    man->CreateNtuple("GEMTRD", "GEMTRD");
+    man->CreateNtupleDColumn("EnergyDepositPerEvent");
+    man->CreateNtupleDColumn("StepLength");
+    man->FinishNtuple(1);
 
 }
 

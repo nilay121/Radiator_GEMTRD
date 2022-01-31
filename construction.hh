@@ -15,6 +15,8 @@
 #include "G4LogicalSkinSurface.hh"
 #include "G4SDManager.hh"
 #include "detector.hh"
+#include "G4UserLimits.hh"
+class G4VPhysicalVolume;
 
 class MyDetectorConstruction : public G4VUserDetectorConstruction
 {
@@ -25,6 +27,7 @@ public:
     G4LogicalVolume *GetScoringVolume() const { return fScoringVolume; }
 
     virtual G4VPhysicalVolume *Construct();
+    G4VPhysicalVolume *GetAbsorberPV() const { return fAbsorberPV;}
 
 private:
     G4Box *solidWorld, *solidRadiator, *solidDetector, *solidScintillator;
@@ -77,6 +80,7 @@ private:
   G4Region*             fRadRegion;
   G4Material*        fMat;  
   G4Material*        fAbsorberMaterial;
+  G4VPhysicalVolume*   fAbsorberPV;
 
     void DefineMaterials();
     virtual void ConstructSDandField();
@@ -86,5 +90,6 @@ private:
     G4LogicalVolume *fScoringVolume;
 
 };
+
 
 #endif

@@ -101,7 +101,7 @@ inline G4double VtxStepCut::PostStepGetPhysicalInteractionLength(
 
    if((MaxChargedStep > 0.) &&
       (aTrack.GetVolume() != NULL) &&
-      (aTrack.GetVolume()->GetName() == "Absorber") &&
+      (aTrack.GetVolume()->GetName() == "gem") &&
       (aTrack.GetDynamicParticle()->GetDefinition()->GetPDGCharge() != 0.))
         ProposedStep = MaxChargedStep ;
 

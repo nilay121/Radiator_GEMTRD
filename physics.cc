@@ -64,7 +64,9 @@
 
 
 
-MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),MaxChargedStep(DBL_MAX),
+MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),
+     //MaxChargedStep(DBL_MAX),
+     MaxChargedStep(100*um),
      fRadiatorCuts(0),fDetectorCuts(0)
 {
    pDet = p;
@@ -72,7 +74,9 @@ MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),Max
   // world cuts
 
   defaultCutValue = 1.*mm;
+  
   //defaultCutValue = 0.001*mm;  // 1 um
+  
   cutForGamma     = defaultCutValue;
   cutForElectron  = defaultCutValue;
   cutForPositron  = defaultCutValue;
@@ -179,6 +183,8 @@ void MyPhysicsList::ConstructEM()
 
   const G4RegionStore* theRegionStore = G4RegionStore::GetInstance();
   G4Region* gas = theRegionStore->GetRegion("XTRdEdxDetector");
+  
+  G4cout<<"The gas name is :"<<gas<<G4endl;
 
   G4VXTRenergyLoss* processXTR = 0;
   /*
@@ -302,8 +308,7 @@ void MyPhysicsList::ConstructEM()
     {
       // Construct processes for electron
       theeminusStepCut = new VtxStepCut();
-      theeminusStepCut->SetMaxStep(MaxChargedStep) ;
-      //theeminusStepCut->SetMaxStep(100*um) ;
+      theeminusStepCut->SetMaxStep(step_cut) ;
       
       G4eIonisation* eioni = new G4eIonisation();
       G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
@@ -321,13 +326,13 @@ void MyPhysicsList::ConstructEM()
 
     }
    
-    /*
+    
     else if (particleName == "e+")
     {
       // Construct processes for positron
 
       theeplusStepCut = new VtxStepCut();
-      theeplusStepCut->SetMaxStep(MaxChargedStep) ;
+      theeplusStepCut->SetMaxStep(step_cut) ;
       G4eIonisation* eioni = new G4eIonisation();
       G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
       eioni->AddEmModel(0,pai,pai,gas);
@@ -348,7 +353,7 @@ void MyPhysicsList::ConstructEM()
      // Construct processes for muon+
 
       VtxStepCut* muonStepCut = new VtxStepCut();
-      muonStepCut->SetMaxStep(MaxChargedStep) ;
+      muonStepCut->SetMaxStep(step_cut) ;
 
       G4MuIonisation* muioni = new G4MuIonisation() ;
 
@@ -363,7 +368,6 @@ void MyPhysicsList::ConstructEM()
       //pmanager->AddDiscreteProcess(processXTR);
 
     }
-    */
     else if (
                 particleName == "proton"
                || particleName == "antiproton"
@@ -374,7 +378,7 @@ void MyPhysicsList::ConstructEM()
               )
     {
       VtxStepCut* thehadronStepCut = new VtxStepCut();
-      thehadronStepCut->SetMaxStep(MaxChargedStep) ;
+      thehadronStepCut->SetMaxStep(step_cut) ;
 
       G4hIonisation* thehIonisation = new G4hIonisation();
       G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
@@ -430,6 +434,7 @@ void MyPhysicsList::SetCuts()
   }
   G4Region* region;
   //* uncomment for FDC & depfet !!!!!!!!!!!!!!!!!!!!!!!!!!!
+ 
   if( !fRadiatorCuts ) SetRadiatorCuts();
   region = G4RegionStore::GetInstance()->GetRegion("XTRradiator");
   region->SetProductionCuts(fRadiatorCuts);

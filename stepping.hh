@@ -9,6 +9,9 @@
 #include "construction.hh"
 #include "event.hh"
 
+class MyDetectorConstruction;
+class MyEventAction;
+
 class MySteppingAction : public G4UserSteppingAction
 {
 public:
@@ -19,6 +22,8 @@ public:
     
 private:
     MyEventAction *fEventAction;
+    //MyDetectorConstruction *fDetConstruction;
+    
 };
 
 #endif
