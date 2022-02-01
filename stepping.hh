@@ -22,6 +22,8 @@ public:
     
 private:
     MyEventAction *fEventAction;
+    G4double Egamma;
+    G4double Egamma2;
     //MyDetectorConstruction *fDetConstruction;
     
 };

@@ -28,6 +28,14 @@ public:
 
     virtual G4VPhysicalVolume *Construct();
     G4VPhysicalVolume *GetAbsorberPV() const { return fAbsorberPV;}
+    
+    G4LogicalVolume* GetLogicalRadiator() {return fLogicRadiator;};
+    G4double         GetFoilThick()       {return fRadThickness;};      
+    G4double         GetGasThick()        {return fGasGap;};      
+    G4int            GetFoilNumber()      {return fFoilNumber;};      
+    G4Material* GetFoilMaterial()  {return fFoilMat;};
+    G4Material* GetGasMaterial()  {return fGasMat;};
+    G4double test=0.001;
 
 private:
     G4Box *solidWorld, *solidRadiator, *solidDetector, *solidScintillator;
@@ -67,7 +75,7 @@ private:
   G4double fStartR;
   G4double fStartZ;
 
-//G4double fRadThick;
+  G4double fRadThick;
   G4double fMylarThick;
 
  
@@ -88,7 +96,7 @@ private:
     G4GenericMessenger *fMessenger;
 
     G4LogicalVolume *fScoringVolume;
-
+    
 };
 
 

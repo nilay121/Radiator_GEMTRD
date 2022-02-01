@@ -8,7 +8,7 @@ MySteppingAction::MySteppingAction(MyEventAction *eventAction)
 MySteppingAction::~MySteppingAction()
 {}
 
-void MySteppingAction::UserSteppingAction(const G4Step *step)
+void MySteppingAction::UserSteppingAction(const G4Step *aStep)
 {   
  /*   G4LogicalVolume *volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume()->GetLogicalVolume();
     
@@ -24,15 +24,15 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
     fEventAction->AddEdep(edep);*/
     
   // get volume of the current step
-  auto volume = step->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
+  auto volume = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   
   // energy deposit
-  auto edep = step->GetTotalEnergyDeposit();
+  auto edep = aStep->GetTotalEnergyDeposit();
   
     // step length
   G4double posz = 0.;
-  if ( step->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
-    posz = step->GetStepLength();
+  if ( aStep->GetTrack()->GetDefinition()->GetPDGCharge() != 0. ) {
+    posz = aStep->GetStepLength();
   }
       
   const MyDetectorConstruction *detectorConstruction = static_cast<const MyDetectorConstruction*>(G4RunManager::GetRunManager()->GetUserDetectorConstruction());    
@@ -40,5 +40,44 @@ void MySteppingAction::UserSteppingAction(const G4Step *step)
     fEventAction->AddEdep(edep,posz);
   }
     
+  
+  //--  gamma ENTER absorber ???
+
+  //printf("----------- test ----------------- fGeomBoundary-%d(%d) \n",aStep->GetPostStepPoint()->GetStepStatus(),fGeomBoundary);
+
+  if (aStep->GetPostStepPoint()->GetStepStatus()==fGeomBoundary && aStep->GetPostStepPoint()->GetPhysicalVolume() )    
+  {
+    if (
+	(aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="Envelope") &&
+	((aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="gem")) &&
+	(aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "Transportation") &&
+	(aStep->GetTrack()->GetMomentumDirection().z()>0.)                       &&
+	(aStep->GetTrack()->GetDynamicParticle()->GetDefinition()->GetParticleName() == "gamma")
+	)
+      {
+	Egamma = aStep->GetTrack()->GetKineticEnergy() ;
+	G4double ene_dep = aStep->GetTotalEnergyDeposit(); 
+	G4cout<<"The energy before entering GEM is :- "<<Egamma/keV<<" kev"<<G4endl;
+	G4cout<<"The energy deposited in GEM is :- "<<ene_dep/keV<<" kev"<<G4endl;
+      }
+  }  
+  
+  //--  gamma EXIT absorber forward
+  if (aStep->GetPostStepPoint()->GetStepStatus()==fGeomBoundary && aStep->GetPostStepPoint()->GetPhysicalVolume() )    {
+  if (
+      ((aStep->GetPreStepPoint()->GetPhysicalVolume()->GetName()=="gem") &&
+       (aStep->GetPostStepPoint()->GetPhysicalVolume()->GetName()=="World") &&
+      (aStep->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName() == "Transportation") &&
+      (aStep->GetTrack()->GetMomentumDirection().z()>0.) &&
+      (aStep->GetTrack()->GetDynamicParticle()->GetDefinition()->GetParticleName() == "gamma"))
+     )
+     {
+       Egamma2 = aStep->GetTrack()->GetKineticEnergy() ;
+       G4cout<<"The energy after leaving GEM is :- "<<Egamma2/keV<<" kev"<<G4endl;
+     }
+  }
+  
+    
+  
     
 }

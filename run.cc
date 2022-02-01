@@ -25,6 +25,12 @@ MyRunAction::MyRunAction()
     man->CreateNtupleDColumn("EnergyDepositPerEvent");
     man->CreateNtupleDColumn("StepLength");
     man->FinishNtuple(1);
+    
+    man->CreateNtuple("GEMTRD2", "GEMTRD2");
+    man->CreateNtupleDColumn("EnergyBeforeGem");
+    man->CreateNtupleDColumn("EnergyAfterGem");
+    man->FinishNtuple(2);
+
 
 }
 

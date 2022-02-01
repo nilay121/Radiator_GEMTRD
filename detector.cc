@@ -25,6 +25,10 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
     edep_val = aStep->GetTotalEnergyDeposit(); 
     G4double trackID = aStep->GetTrack()->GetTrackID();
     //G4double Tsec = aStep->GetPreStepPoint()->GetKineticEnergy() ;
+    
+    G4double eneBeforeGem = aStep->GetPreStepPoint()->GetKineticEnergy();
+    
+    G4double eneAfterGem = aStep->GetPostStepPoint()->GetKineticEnergy();
 
     G4double time = preStepPoint->GetGlobalTime();
 
@@ -39,6 +43,7 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
 
     G4AnalysisManager *man = G4AnalysisManager::Instance();
 
+
     man->FillNtupleIColumn(0, 0, evt);
     man->FillNtupleDColumn(0, 1, posPhoton[0]);
     man->FillNtupleDColumn(0, 2, posPhoton[1]);
@@ -51,8 +56,12 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
       man->FillNtupleDColumn(0, 9, vertexPos[0]);
     man->FillNtupleDColumn(0, 10, vertexPos[1]);
     man->FillNtupleDColumn(0, 11, vertexPos[2]);
-    man->FillNtupleDColumn(0, 12, vertexMom[2])/GeV;
+    man->FillNtupleDColumn(0, 12, vertexMom[2]/GeV);
     man->AddNtupleRow(0);
+    
+        man->FillNtupleDColumn(2, 0, eneBeforeGem/MeV);
+    man->FillNtupleDColumn(2, 1, eneAfterGem/MeV);
+    man->AddNtupleRow(2);
 
 
     return true;

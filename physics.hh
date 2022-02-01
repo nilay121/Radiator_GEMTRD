@@ -14,6 +14,7 @@
 #include "G4ForwardXrayTR.hh"
 #include "construction.hh"
 #include "VtxStepCut.hh"
+class MyDetectorConstruction;
 class MyPhysicsList : public G4VModularPhysicsList
 {
 public:
@@ -43,7 +44,7 @@ public:
     void SetDetectorCuts();
     
     void SetMaxStep(G4double);
-    void SetXTRModel(G4String m) {fXTRModel = m; G4cout<<fXTRModel<<G4endl;}; 
+    //void SetXTRModel(G4String m) {fXTRModel = m; G4cout<<fXTRModel<<G4endl;}; 
 
     G4double MaxChargedStep;
 

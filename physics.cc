@@ -62,14 +62,14 @@
 #include "G4ShortLivedConstructor.hh"
 
 
+class MyDetectorConstruction;
 
-
-MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),
-     //MaxChargedStep(DBL_MAX),
-     MaxChargedStep(100*um),
-     fRadiatorCuts(0),fDetectorCuts(0)
+MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),fRadiatorCuts(0),fDetectorCuts(0)
 {
    pDet = p;
+   
+   //G4cout<<"The Foil material is "<<pDet->GetFoilNumber();
+   
 
   // world cuts
 
@@ -183,16 +183,22 @@ void MyPhysicsList::ConstructEM()
 
   const G4RegionStore* theRegionStore = G4RegionStore::GetInstance();
   G4Region* gas = theRegionStore->GetRegion("XTRdEdxDetector");
-  
+ 
+ 
   G4cout<<"The gas name is :"<<gas<<G4endl;
+  
+  G4cout<<"The Foil number is "<<pDet->GetFoilNumber()<<G4endl;
+  G4cout<<"The gas thickness is "<<pDet->GetGasThick()<<G4endl;
+  G4cout<<"The logical radiator is "<<pDet->GetLogicalRadiator()<<G4endl;
+  
 
   G4VXTRenergyLoss* processXTR = 0;
-  /*
   
-   ############ what to do with this processXTR
-  if(fXTRModel == "gammaR" )          
-  {      
+   //############ what to do with this processXTR
+  //if(fXTRModel == "gammaR" )          
     // G4GammaXTRadiator* 
+    
+    /*
     processXTR = new G4GammaXTRadiator(pDet->GetLogicalRadiator(),
 				       100.,   //--  AlphaPlate 100
 				       100.,   //--  AlphaGas   100
@@ -202,7 +208,9 @@ void MyPhysicsList::ConstructEM()
                                        pDet->GetGasThick(),
                                        pDet->GetFoilNumber(),
                                        "GammaXTRadiator");
-  }
+                                       
+                                       
+  
   else if(fXTRModel == "gammaM" ) 
   {
     // G4XTRGammaRadModel* 
@@ -274,16 +282,25 @@ void MyPhysicsList::ConstructEM()
                                          pDet->GetGasThick(),
                                          pDet->GetFoilNumber(),
                                          "RegularXTRadiator");
-  }     
+  }    
   else
   {
     G4Exception("Invalid XTR model name", "InvalidSetup",
                  FatalException, "XTR model name is out of the name list");
-  }   
+  }  */
   //  processXTR->SetCompton(true);
   
-  //processXTR->SetVerboseLevel(1);
-  //processXTR->SetAngleRadDistr(true);*/
+  // G4XTRRegularRadModel* 
+   /* processXTR = new G4XTRRegularRadModel(pDet->GetLogicalRadiator(),
+                                         pDet->GetFoilMaterial(),
+                                         pDet->GetGasMaterial(),
+                                         pDet->GetFoilThick(),
+                                         pDet->GetGasThick(),
+                                         pDet->GetFoilNumber(),
+                                         "RegularXTRadiator");
+  
+  processXTR->SetVerboseLevel(1);
+  processXTR->SetAngleRadDistr(true);*/
 
   auto theParticleIterator=GetParticleIterator();
   theParticleIterator->reset();
@@ -320,7 +337,7 @@ void MyPhysicsList::ConstructEM()
       
       pmanager->AddProcess(eioni,-1,2,2);
       pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
-      //pmanager->AddDiscreteProcess(processXTR);
+     // pmanager->AddDiscreteProcess(processXTR);
       pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
       pmanager->AddDiscreteProcess(theeminusStepCut);
 
@@ -342,7 +359,7 @@ void MyPhysicsList::ConstructEM()
       pmanager->AddProcess(eioni,-1,2,2);
       pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
       pmanager->AddProcess(new G4eplusAnnihilation,0,-1,4);
-      //pmanager->AddDiscreteProcess(processXTR);
+     // pmanager->AddDiscreteProcess(processXTR);
       pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
       pmanager->AddDiscreteProcess(theeplusStepCut);
 

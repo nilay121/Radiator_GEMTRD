@@ -10,11 +10,12 @@
 #include "construction.hh"
 #include "physics.hh"
 #include "action.hh"
-
+class MyDetectorConstruction;
 int main(int argc, char** argv)
 {
     G4UIExecutive* ui = 0;
-    MyDetectorConstruction *pDet;
+    MyDetectorConstruction* pDet;
+    pDet = new MyDetectorConstruction;
     
     #ifdef G4MULTITHREADED
       G4MTRunManager* runManager = new G4MTRunManager;
@@ -22,7 +23,7 @@ int main(int argc, char** argv)
       G4RunManager* runManager = new G4RunManager;
     #endif
     
-    runManager->SetUserInitialization(new MyDetectorConstruction());
+    runManager->SetUserInitialization(pDet);
     runManager->SetUserInitialization(new MyPhysicsList(pDet));
     runManager->SetUserInitialization(new MyActionInitialization());
 

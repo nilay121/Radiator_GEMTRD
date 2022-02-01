@@ -440,9 +440,14 @@ G4NistManager* man = G4NistManager::Instance();
   
   fRadThickness = 0.020*mm;                //0.020*mm;    // 16 um // ZEUS NIMA 323 (1992) 135-139, D=20um, dens.= 0.1 g/cm3
   fGasGap       = 0.600*mm;    // for ZEUS  300-publication
+  fDetGap       =   0.01*mm ;
   
   foilGasRatio  = fRadThickness/(fRadThickness+fGasGap); //######################### HOW?????
   G4cout<<"foil gas ratio is :- "<<foilGasRatio<<G4endl;
+  
+  fRadThick = .3*cm - fGasGap + fDetGap;
+  fFoilNumber=fRadThick/(fRadThickness + fGasGap);
+  G4cout<<"The foil number is "<<fFoilNumber;
   
   G4double totDensity  = foilDensity*foilGasRatio + gasDensity*(1.0-foilGasRatio) ;
   
@@ -509,14 +514,14 @@ G4NistManager* man = G4NistManager::Instance();
     new G4Box("Envelope",                    //its name
         7.5*cm,7.5*cm,7.5*cm); //its size
       
-  G4LogicalVolume* logicEnv =                         
+  G4LogicalVolume* fLogicRadiator =                         
     new G4LogicalVolume(solidEnv,            //its solid
                         fRadiatorMat,             //its material
                         "Envelope");         //its name
                
   new G4PVPlacement(0,                       //no rotation
                     G4ThreeVector(0.,0.,7.5*cm),         //at (0,0,0)
-                    logicEnv,                //its logical volume
+                    fLogicRadiator,                //its logical volume
                     "Envelope",              //its name
                     logicWorld,              //its mother  volume
                     false,                   //no boolean operation
@@ -525,7 +530,7 @@ G4NistManager* man = G4NistManager::Instance();
  
  
   fRadRegion = new G4Region("XTRradiator");
-  fRadRegion->AddRootLogicalVolume(logicEnv);  
+  fRadRegion->AddRootLogicalVolume(fLogicRadiator);  
   
  //Absorber(GEM)
   G4Box* solidGem =    
