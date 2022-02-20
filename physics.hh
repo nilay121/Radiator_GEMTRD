@@ -15,7 +15,7 @@
 #include "construction.hh"
 #include "VtxStepCut.hh"
 class MyDetectorConstruction;
-class MyPhysicsList : public G4VModularPhysicsList
+class MyPhysicsList : public G4VUserPhysicsList
 {
 public:
     MyPhysicsList(MyDetectorConstruction*);
@@ -62,7 +62,8 @@ public:
     G4ProductionCuts* fDetectorCuts;
     G4double fElectronCut, fGammaCut, fPositronCut;
     G4String fXTRModel;
-    G4double step_cut=1.*mm;
+    G4double step_cut=1*mm;
+    G4double highEnergyLimit=100*keV;
 };
 
 #endif

@@ -60,7 +60,13 @@
 #include "G4BaryonConstructor.hh"
 #include "G4IonConstructor.hh"
 #include "G4ShortLivedConstructor.hh"
+#include "G4SeltzerBergerModel.hh"
+#include "G4eBremsstrahlungRelModel.hh"
+#include "G4UrbanMscModel.hh"
+#include "G4WentzelVIModel.hh"
 
+
+class eBremsstrahlung;
 
 class MyDetectorConstruction;
 
@@ -73,9 +79,9 @@ MyPhysicsList::MyPhysicsList(MyDetectorConstruction* p):G4VUserPhysicsList(),fRa
 
   // world cuts
 
-  defaultCutValue = 1.*mm;
+  defaultCutValue = 1*mm;
   
-  //defaultCutValue = 0.001*mm;  // 1 um
+ // defaultCutValue = 0.001*mm;  // 1 um
   
   cutForGamma     = defaultCutValue;
   cutForElectron  = defaultCutValue;
@@ -291,7 +297,8 @@ void MyPhysicsList::ConstructEM()
   //  processXTR->SetCompton(true);
   
   // G4XTRRegularRadModel* 
-   /* processXTR = new G4XTRRegularRadModel(pDet->GetLogicalRadiator(),
+  /*
+    processXTR = new G4XTRRegularRadModel(pDet->GetLogicalRadiator(),
                                          pDet->GetFoilMaterial(),
                                          pDet->GetGasMaterial(),
                                          pDet->GetFoilThick(),
@@ -330,16 +337,25 @@ void MyPhysicsList::ConstructEM()
       G4eIonisation* eioni = new G4eIonisation();
       G4PAIModel*     pai = new G4PAIModel(particle,"PAIModel");
       eioni->AddEmModel(0,pai,pai,gas);
-
       pmanager->AddProcess(new G4eMultipleScattering,-1,1,1);
       
-      ////pmanager->AddProcess(new G4eMultipleScattering,-1,-1,-1);
-      
       pmanager->AddProcess(eioni,-1,2,2);
-      pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
+      /*
+      G4eBremsstrahlung* msc = new G4eBremsstrahlung;
+      G4SeltzerBergerModel* msc1 = new G4SeltzerBergerModel();
+      G4eBremsstrahlungRelModel* msc2 = new G4eBremsstrahlungRelModel();
+      msc1->SetHighEnergyLimit(highEnergyLimit);
+      msc1->SetSecondaryThreshold(100*eV);
+      msc2->SetHighEnergyLimit(highEnergyLimit);
+      msc2->SetSecondaryThreshold(100*eV);
+      msc->AddEmModel(0, msc1);
+      msc->AddEmModel(0, msc2);
+      pmanager->AddProcess(msc,-1,3,3);*/
+       
+       pmanager->AddProcess(new G4eBremsstrahlung,-1,3,3);
      // pmanager->AddDiscreteProcess(processXTR);
       pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
-      pmanager->AddDiscreteProcess(theeminusStepCut);
+     // pmanager->AddDiscreteProcess(theeminusStepCut);
 
     }
    
@@ -361,7 +377,7 @@ void MyPhysicsList::ConstructEM()
       pmanager->AddProcess(new G4eplusAnnihilation,0,-1,4);
      // pmanager->AddDiscreteProcess(processXTR);
       pmanager->AddDiscreteProcess(new G4SynchrotronRadiation);
-      pmanager->AddDiscreteProcess(theeplusStepCut);
+     // pmanager->AddDiscreteProcess(theeplusStepCut);
 
     }
     else if( particleName == "mu+" ||
@@ -381,7 +397,7 @@ void MyPhysicsList::ConstructEM()
       pmanager->AddProcess(muioni,-1,2,2);
       pmanager->AddProcess(new G4MuBremsstrahlung(),-1,3,3);
       pmanager->AddProcess(new G4MuPairProduction(),-1,4,4);
-      pmanager->AddProcess( muonStepCut,-1,-1,5);
+     // pmanager->AddProcess( muonStepCut,-1,-1,5);
       //pmanager->AddDiscreteProcess(processXTR);
 
     }
@@ -403,7 +419,7 @@ void MyPhysicsList::ConstructEM()
 
       pmanager->AddProcess(new G4hMultipleScattering,-1,1,1);
       pmanager->AddProcess(thehIonisation,-1,2,2);
-      pmanager->AddProcess(thehadronStepCut,-1,-1,3);
+      //pmanager->AddProcess(thehadronStepCut,-1,-1,3);
       //pmanager->AddDiscreteProcess(processXTR);
 
     }
@@ -451,12 +467,12 @@ void MyPhysicsList::SetCuts()
   }
   G4Region* region;
   //* uncomment for FDC & depfet !!!!!!!!!!!!!!!!!!!!!!!!!!!
- 
+
   if( !fRadiatorCuts ) SetRadiatorCuts();
   region = G4RegionStore::GetInstance()->GetRegion("XTRradiator");
   region->SetProductionCuts(fRadiatorCuts);
   G4cout << "Radiator cuts are set" << G4endl;
-  
+ 
   if( !fDetectorCuts ) SetDetectorCuts();
   region = G4RegionStore::GetInstance()->GetRegion("XTRdEdxDetector");
   region->SetProductionCuts(fDetectorCuts);
@@ -482,7 +498,6 @@ void MyPhysicsList::SetMaxStep(G4double step)
   G4cout << " MaxChargedStep=" << MaxChargedStep << G4endl;
   G4cout << G4endl;
 }
-
 
 void MyPhysicsList::SetRadiatorCuts()
 {

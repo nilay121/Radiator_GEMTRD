@@ -18,7 +18,9 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
     G4StepPoint *postStepPoint = aStep->GetPostStepPoint();
 
     //G4double posPhoton_z = aStep->GetTrack()->GetPosition().z();
+    
     G4ThreeVector posPhoton = track->GetPosition();
+    
     G4ThreeVector momPhoton = track->GetMomentum();
     G4ThreeVector vertexPos   =  track->GetVertexPosition();
     G4ThreeVector vertexMom   =  track->GetVertexMomentumDirection();
@@ -26,10 +28,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
     G4double trackID = aStep->GetTrack()->GetTrackID();
     //G4double Tsec = aStep->GetPreStepPoint()->GetKineticEnergy() ;
     
-    G4double eneBeforeGem = aStep->GetPreStepPoint()->GetKineticEnergy();
-    
-    G4double eneAfterGem = aStep->GetPostStepPoint()->GetKineticEnergy();
-
     G4double time = preStepPoint->GetGlobalTime();
 
     const G4VTouchable *touchable = aStep->GetPreStepPoint()->GetTouchable();
@@ -58,11 +56,6 @@ G4bool MySensitiveDetector::ProcessHits(G4Step* aStep, G4TouchableHistory *ROhis
     man->FillNtupleDColumn(0, 11, vertexPos[2]);
     man->FillNtupleDColumn(0, 12, vertexMom[2]/GeV);
     man->AddNtupleRow(0);
-    
-        man->FillNtupleDColumn(2, 0, eneBeforeGem/MeV);
-    man->FillNtupleDColumn(2, 1, eneAfterGem/MeV);
-    man->AddNtupleRow(2);
-
 
     return true;
 }

@@ -458,8 +458,8 @@ G4NistManager* man = G4NistManager::Instance();
 
   G4double fractionFoil =  foilDensity*foilGasRatio/totDensity ; 
   G4double fractionGas  =  gasDensity*(1.0-foilGasRatio)/totDensity ; 
-  G4cout<<"Fraction gas "<<fractionGas*100<<"%"<<G4endl;
-  G4cout<<"Fraction foil "<<fractionFoil*100<<"%"<<G4endl;
+  G4cout<<"Fraction gas "<<fractionGas<<G4endl;
+  G4cout<<"Fraction foil "<<fractionFoil<<G4endl;
   
    
   G4Material* radiatorMat0 = new G4Material("radiatorMat0"  , totDensity, 2);
@@ -508,8 +508,9 @@ G4NistManager* man = G4NistManager::Instance();
                       false,                 //no boolean operation
                       0,                     //copy number
                       checkOverlaps);        //overlaps checking
-
+ 
   //Radiator
+ 
   G4Box* solidEnv =    
     new G4Box("Envelope",                    //its name
         7.5*cm,7.5*cm,7.5*cm); //its size
@@ -554,6 +555,7 @@ G4NistManager* man = G4NistManager::Instance();
                     
   fRegGasDet = new G4Region("XTRdEdxDetector");  
   fRegGasDet->AddRootLogicalVolume(logicGem);
+ 
   //G4double maxStep = 0.1*mm;
   //G4double maxTime = 100.*s;
 

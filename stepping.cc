@@ -1,5 +1,5 @@
 #include "stepping.hh"
-
+#include <time.h>
 MySteppingAction::MySteppingAction(MyEventAction *eventAction)
 {
     fEventAction = eventAction;
@@ -24,6 +24,7 @@ void MySteppingAction::UserSteppingAction(const G4Step *aStep)
     fEventAction->AddEdep(edep);*/
     
   // get volume of the current step
+ // srand(time(0));
   auto volume = aStep->GetPreStepPoint()->GetTouchableHandle()->GetVolume();
   
   // energy deposit
@@ -55,9 +56,15 @@ void MySteppingAction::UserSteppingAction(const G4Step *aStep)
 	(aStep->GetTrack()->GetDynamicParticle()->GetDefinition()->GetParticleName() == "gamma")
 	)
       {
+      	G4double temp = aStep->GetTrack()->GetKineticEnergy();
+      	G4cout<<"The energy before entering GEM is :- "<<temp/keV<<" kev"<<G4endl;
+        G4double randEne = rand()%30;
+        aStep->GetTrack()->SetKineticEnergy((randEne+10)*keV); //10 giving good
+       // aStep->GetTrack()->SetKineticEnergy(0*keV);
 	Egamma = aStep->GetTrack()->GetKineticEnergy() ;
+	G4cout<<"The energy after setting cut is :- "<<Egamma/keV<<" kev"<<G4endl;
 	G4double ene_dep = aStep->GetTotalEnergyDeposit(); 
-	G4cout<<"The energy before entering GEM is :- "<<Egamma/keV<<" kev"<<G4endl;
+	
 	G4cout<<"The energy deposited in GEM is :- "<<ene_dep/keV<<" kev"<<G4endl;
       }
   }  
@@ -77,7 +84,10 @@ void MySteppingAction::UserSteppingAction(const G4Step *aStep)
      }
   }
   
-    
+   G4AnalysisManager *man = G4AnalysisManager::Instance();
+   
+    man->FillNtupleDColumn(2, 0, Egamma/keV);
+    man->FillNtupleDColumn(2, 1, Egamma2/keV);
+    man->AddNtupleRow(2);
   
-    
 }

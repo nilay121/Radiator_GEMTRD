@@ -1,4 +1,6 @@
 #include "generator.hh"
+#include "G4Positron.hh"
+#include "G4MuonMinus.hh"
 
 MyPrimaryGenerator::MyPrimaryGenerator()
 {
@@ -8,13 +10,16 @@ MyPrimaryGenerator::MyPrimaryGenerator()
   G4ParticleTable* particleTable = G4ParticleTable::GetParticleTable();
   G4String particleName;
   //G4ParticleDefinition *particle = particleTable->FindParticle(particleName="e-");
-    G4ParticleDefinition *particle = G4Electron::Definition();
-  //G4ParticleDefinition *particle = G4Gamma::Definition();
-  //G4ParticleDefinition *particle = G4PionMinus::Definition();
+   G4ParticleDefinition *particle = G4Electron::Definition();
+  // G4ParticleDefinition *particle = G4Positron::Definition();
+ // G4ParticleDefinition *particle = G4Gamma::Definition();
+// G4ParticleDefinition *particle = G4PionMinus::Definition();
+  //  G4ParticleDefinition *particle = G4MuonMinus::Definition();
+
 
   fParticleGun->SetParticleDefinition(particle);
   fParticleGun->SetParticleMomentumDirection(G4ThreeVector(0.,0.,1.));
-  fParticleGun->SetParticleEnergy(6.*GeV);
+  fParticleGun->SetParticleEnergy(3*GeV);
   //fParticleGun->SetParticleMomentum(6.*GeV);
 }
 
